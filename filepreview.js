@@ -95,7 +95,12 @@ module.exports = {
         }
 
         if ( fileType == 'image' ) {
-          var convertArgs = [input + '[0]', output];
+          var inputPage = input;
+          if (options.page)
+          {
+            inputPage += '[' + options.page + ']']
+          }
+          var convertArgs = [inputPage, output];
           if (options.width > 0 && options.height > 0) {
             convertArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
           }
@@ -235,7 +240,12 @@ module.exports = {
 
     if ( fileType == 'image' ) {
       try {
-        var convertArgs = [input + '[0]', output];
+        var inputPage = input;
+        if (options.page)
+        {
+          inputPage += '[' + options.page + ']']
+        }
+        var convertArgs = [inputPage, output];
         if (options.width > 0 && options.height > 0) {
           convertArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
         }
