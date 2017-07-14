@@ -116,6 +116,9 @@ module.exports = {
           if (options.sharpen) {
             convertArgs.splice(0, 0, '-sharpen', options.sharpen);
           }
+          if (options.adjoin) {
+            convertArgs.splice(0, 0, '-adjoin');
+          }
           child_process.execFile('convert', convertArgs, function(error) {
             if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
               fs.unlinkSync(input);
@@ -260,6 +263,9 @@ module.exports = {
         }
         if (options.sharpen) {
           convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+        }
+        if (options.adjoin) {
+          convertArgs.splice(0, 0, '-adjoin');
         }
         child_process.execFileSync('convert', convertArgs);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
