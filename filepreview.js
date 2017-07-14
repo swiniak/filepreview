@@ -102,6 +102,15 @@ module.exports = {
           if (options.quality) {
             convertArgs.splice(0, 0, '-quality', options.quality);
           }
+          if (options.density) {
+            convertArgs.splice(0, 0, '-density', options.density);
+          }
+          if (options.flatten) {
+            convertArgs.splice(0, 0, '-flatten');
+          }
+          if (options.sharpen) {
+            convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+          }
           child_process.execFile('convert', convertArgs, function(error) {
             if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
               fs.unlinkSync(input);
@@ -232,6 +241,15 @@ module.exports = {
         }
         if (options.quality) {
           convertArgs.splice(0, 0, '-quality', options.quality);
+        }
+        if (options.density) {
+          convertArgs.splice(0, 0, '-density', options.density);
+        }
+        if (options.flatten) {
+          convertArgs.splice(0, 0, '-flatten');
+        }
+        if (options.sharpen) {
+          convertArgs.splice(0, 0, '-sharpen', options.sharpen);
         }
         child_process.execFileSync('convert', convertArgs);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
