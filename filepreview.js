@@ -3,6 +3,7 @@
   filepreview : A file preview generator for node.js
 
 */
+const winston = require('winston');
 
 var child_process = require('child_process');
 var crypto = require('crypto');
@@ -13,6 +14,18 @@ var mimedb = require('./db.json');
 var download = require('download-file')
 
 module.exports = {
+  callbackWithLog: function(message, obj, retVal, callback) {
+    if(!retVal)
+    {
+      winston.log('error', message, JSON.stringify(obj));
+    }
+    else
+    {
+      winston.log('debug', message, JSON.stringify(obj));
+    }
+    return callback(retVal);
+  },
+  
   generate: function(input_original, output, options, callback) {
     // Normalize arguments
 
@@ -34,7 +47,7 @@ module.exports = {
       extOutput != 'jpg' &&
       extOutput != 'png'
     ) {
-      return callback(true);
+      return callbackWithLog('Unsuported output extension', extOutput, true, callback);
     }
 
     var fileType = 'other';
@@ -75,9 +88,9 @@ module.exports = {
     }
 
     fs.lstat(input, function(error, stats) {
-      if (error) return callback(error);
+      if (error) return return callbackWithLog('Error', error, error, callback);
       if (!stats.isFile()) {
-        return callback(true);
+        return return callbackWithLog('Not a file', stats, true, callback);
       } else {
         if ( fileType == 'video' ) {
           var ffmpegArgs = ['-y', '-i', input, '-vf', 'thumbnail', '-frames:v', '1', output];
@@ -89,7 +102,7 @@ module.exports = {
               fs.unlinkSync(input);
             }
 
-            if (error) return callback(error);
+            if (error) return callbackWithLog('Error', error, error, callback);
             return callback();
           });
         }
@@ -123,7 +136,7 @@ module.exports = {
             if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
               fs.unlinkSync(input);
             }
-            if (error) return callback(error);
+            if (error) return callbackWithLog('Error', error, error, callback);;
             return callback();
           });
         }
@@ -141,7 +154,7 @@ module.exports = {
           var tempPDF = path.join(os.tmpdir(), hash + '.pdf');
 
           child_process.execFile('unoconv', ['-e', page, '-o', tempPDF, input], function(error) {
-            if (error) return callback(error);
+            if (error) return callbackWithLog('Error', error, error, callback);
             var convertOtherArgs = [tempPDF, output];
             if (options.width > 0 && options.height > 0) {
               convertOtherArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
@@ -162,12 +175,12 @@ module.exports = {
               convertArgs.splice(0, 0, '-adjoin');
             }            
             child_process.execFile('convert', convertOtherArgs, function(error) {
-              if (error) return callback(error);
+              if (error) return callbackWithLog('Error', error, error, callback);
               fs.unlink(tempPDF, function(error) {
                 if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
                   fs.unlinkSync(input);
                 }
-                if (error) return callback(error);
+                if (error) return callbackWithLog('Error', error, error, callback);
                 return callback();
               });
             });
@@ -192,6 +205,7 @@ module.exports = {
       extOutput != 'jpg' &&
       extOutput != 'png'
     ) {
+      winston.log('debug', 'Unsupported output extension', JSON.stringify(extOutput));
       return false;
     }
 
@@ -239,6 +253,7 @@ module.exports = {
           return false;
         }
     } catch (e) {
+        winston.log('error', 'Exception', JSON.stringify(e));
         return false;
     }
 
@@ -254,6 +269,7 @@ module.exports = {
         }
         return true;
       } catch (e) {
+        winston.log('error', 'Exception', JSON.stringify(e));
         return false;
       }
     }
@@ -290,6 +306,7 @@ module.exports = {
         }
         return true;
       } catch (e) {
+        winston.log('error', 'Exception', JSON.stringify(e));
         return false;
       }
     }
@@ -335,6 +352,7 @@ module.exports = {
         }
         return true;
       } catch (e) {
+        winston.log('error', 'Exception', JSON.stringify(e));
         return false;
       }
     }
