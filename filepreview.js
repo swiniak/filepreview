@@ -12,27 +12,51 @@ var fs = require('fs');
 var os = require('os');
 var mimedb = require('./db.json');
 var download = require('download-file')
+const supportedOutputs = ['gif', 'jpg', 'png'];
 
-module.exports = {
-  callbackWithLog: function(message, obj, retVal, callback) {
-    if(!retVal)
+callbackWithLog = function(message, obj, retVal, callback) {
+  if(!retVal)
+  {
+    if(obj instanceof Error)
     {
-      if(obj instanceof Error)
-      {
-        winston.log('error', obj);
-      }
-      else
-      {
-        winston.log('error', message, JSON.stringify(obj));
-      }
+      winston.log('error', obj);
     }
     else
     {
-      winston.log('debug', message, JSON.stringify(obj));
+      winston.log('error', message, JSON.stringify(obj));
     }
-    return callback(retVal);
-  },
-  
+  }
+  else
+  {
+    winston.log('debug', message, JSON.stringify(obj));
+  }
+  return callback(retVal);
+};
+
+setConvertArguments = function(convertArgs, options)
+{
+  if (options.width > 0 && options.height > 0) {
+    convertArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
+  }
+  if (options.quality) {
+    convertArgs.splice(0, 0, '-quality', options.quality);
+  }
+  if (options.density) {
+    convertArgs.splice(0, 0, '-density', options.density);
+  }
+  if (options.flatten) {
+    convertArgs.splice(0, 0, '-flatten');
+  }
+  if (options.sharpen) {
+    convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+  }
+  if (options.adjoin) {
+    convertArgs.splice(0, 0, '-adjoin');
+  }
+}
+
+module.exports = {
+
   generate: function(input_original, output, options, callback) {
     // Normalize arguments
 
@@ -49,11 +73,7 @@ module.exports = {
     var extOutput = path.extname(output).toLowerCase().replace('.','');
     var extInput = path.extname(input).toLowerCase().replace('.','');
 
-    if (
-      extOutput != 'gif' &&
-      extOutput != 'jpg' &&
-      extOutput != 'png'
-    ) {
+    if (supportedOutputs.indexOf(extOutput) < 0) {
       return callbackWithLog('Unsuported output extension', extOutput, true, callback);
     }
 
@@ -121,24 +141,7 @@ module.exports = {
             inputPage += '[' + options.page + ']';
           }
           var convertArgs = [inputPage, output];
-          if (options.width > 0 && options.height > 0) {
-            convertArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
-          }
-          if (options.quality) {
-            convertArgs.splice(0, 0, '-quality', options.quality);
-          }
-          if (options.density) {
-            convertArgs.splice(0, 0, '-density', options.density);
-          }
-          if (options.flatten) {
-            convertArgs.splice(0, 0, '-flatten');
-          }
-          if (options.sharpen) {
-            convertArgs.splice(0, 0, '-sharpen', options.sharpen);
-          }
-          if (options.adjoin) {
-            convertArgs.splice(0, 0, '-adjoin');
-          }
+          setConvertArguments(convertArgs);
           child_process.execFile('convert', convertArgs, function(error) {
             if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
               fs.unlinkSync(input);
@@ -163,24 +166,7 @@ module.exports = {
           child_process.execFile('unoconv', ['-e', page, '-o', tempPDF, input], function(error) {
             if (error) return callbackWithLog('Error', error, error, callback);
             var convertOtherArgs = [tempPDF, output];
-            if (options.width > 0 && options.height > 0) {
-              convertOtherArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
-            }
-            if (options.quality) {
-              convertOtherArgs.splice(0, 0, '-quality', options.quality);
-            }
-            if (options.density) {
-              convertOtherArgs.splice(0, 0, '-density', options.density);
-            }
-            if (options.flatten) {
-              convertOtherArgs.splice(0, 0, '-flatten');
-            }
-            if (options.sharpen) {
-              convertOtherArgs.splice(0, 0, '-sharpen', options.sharpen);
-            }
-            if (options.adjoin) {
-              convertOtherArgs.splice(0, 0, '-adjoin');
-            }            
+            setConvertArguments(convertOtherArgs);
             child_process.execFile('convert', convertOtherArgs, function(error) {
               if (error) return callbackWithLog('Error', error, error, callback);
               fs.unlink(tempPDF, function(error) {
@@ -207,11 +193,7 @@ module.exports = {
     var extOutput = path.extname(output).toLowerCase().replace('.','');
     var extInput = path.extname(input).toLowerCase().replace('.','');
 
-    if (
-      extOutput != 'gif' &&
-      extOutput != 'jpg' &&
-      extOutput != 'png'
-    ) {
+    if (supportedOutputs.indexOf(extOutput) < 0) {
       winston.log('debug', 'Unsupported output extension', JSON.stringify(extOutput));
       return false;
     }
@@ -289,24 +271,7 @@ module.exports = {
           inputPage += '[' + options.page + ']';
         }
         var convertArgs = [inputPage, output];
-        if (options.width > 0 && options.height > 0) {
-          convertArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
-        }
-        if (options.quality) {
-          convertArgs.splice(0, 0, '-quality', options.quality);
-        }
-        if (options.density) {
-          convertArgs.splice(0, 0, '-density', options.density);
-        }
-        if (options.flatten) {
-          convertArgs.splice(0, 0, '-flatten');
-        }
-        if (options.sharpen) {
-          convertArgs.splice(0, 0, '-sharpen', options.sharpen);
-        }
-        if (options.adjoin) {
-          convertArgs.splice(0, 0, '-adjoin');
-        }
+        setConvertArguments(convertArgs);
         child_process.execFileSync('convert', convertArgs);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
@@ -334,24 +299,7 @@ module.exports = {
         child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
 
         var convertOtherArgs = [tempPDF, output];
-        if (options.width > 0 && options.height > 0) {
-          convertOtherArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
-        }
-        if (options.quality) {
-          convertOtherArgs.splice(0, 0, '-quality', options.quality);
-        }
-        if (options.density) {
-          convertOtherArgs.splice(0, 0, '-density', options.density);
-        }
-        if (options.flatten) {
-          convertOtherArgs.splice(0, 0, '-flatten');
-        }
-        if (options.sharpen) {
-          convertOtherArgs.splice(0, 0, '-sharpen', options.sharpen);
-        }
-        if (options.adjoin) {
-          convertOtherArgs.splice(0, 0, '-adjoin');
-        }
+        setConvertArguments(convertOtherArgs);
         child_process.execFileSync('convert', convertOtherArgs);
         fs.unlinkSync(tempPDF);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
