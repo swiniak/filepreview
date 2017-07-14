@@ -88,9 +88,9 @@ module.exports = {
     }
 
     fs.lstat(input, function(error, stats) {
-      if (error) return return callbackWithLog('Error', error, error, callback);
+      if (error) return callbackWithLog('Error', error, error, callback);
       if (!stats.isFile()) {
-        return return callbackWithLog('Not a file', stats, true, callback);
+        return callbackWithLog('Not a file', stats, true, callback);
       } else {
         if ( fileType == 'video' ) {
           var ffmpegArgs = ['-y', '-i', input, '-vf', 'thumbnail', '-frames:v', '1', output];
