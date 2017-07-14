@@ -132,10 +132,15 @@ module.exports = {
           var hash = crypto.createHash('sha512');
           hash.update(Math.random().toString());
           hash = hash.digest('hex');
+          var page = 'PageRange=1-99';
+          if (options.page)
+          {
+            page = 'PageRange=' + options.page;
+          }
 
           var tempPDF = path.join(os.tmpdir(), hash + '.pdf');
 
-          child_process.execFile('unoconv', ['-e', 'PageRange=1', '-o', tempPDF, input], function(error) {
+          child_process.execFile('unoconv', ['-e', page, '-o', tempPDF, input], function(error) {
             if (error) return callback(error);
             var convertOtherArgs = [tempPDF + '[0]', output];
             if (options.width > 0 && options.height > 0) {
@@ -282,10 +287,15 @@ module.exports = {
         var hash = crypto.createHash('sha512');
         hash.update(Math.random().toString());
         hash = hash.digest('hex');
-
+        var page = 'PageRange=1-99';
+        if (options.page)
+        {
+          page = 'PageRange=' + options.page;
+        }
+        
         var tempPDF = path.join(os.tmpdir(), hash + '.pdf');
 
-        child_process.execFileSync('unoconv', ['-e', 'PageRange=1', '-o', tempPDF, input]);
+        child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
 
         var convertOtherArgs = [tempPDF + '[0]', output];
         if (options.width > 0 && options.height > 0) {
