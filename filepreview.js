@@ -141,7 +141,7 @@ module.exports = {
             inputPage += '[' + options.page + ']';
           }
           var convertArgs = [inputPage, output];
-          setConvertArguments(convertArgs);
+          setConvertArguments(convertArgs, options);
           child_process.execFile('convert', convertArgs, function(error) {
             if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
               fs.unlinkSync(input);
@@ -166,7 +166,7 @@ module.exports = {
           child_process.execFile('unoconv', ['-e', page, '-o', tempPDF, input], function(error) {
             if (error) return callbackWithLog('Error', error, error, callback);
             var convertOtherArgs = [tempPDF, output];
-            setConvertArguments(convertOtherArgs);
+            setConvertArguments(convertOtherArgs, options);
             child_process.execFile('convert', convertOtherArgs, function(error) {
               if (error) return callbackWithLog('Error', error, error, callback);
               fs.unlink(tempPDF, function(error) {
@@ -271,7 +271,7 @@ module.exports = {
           inputPage += '[' + options.page + ']';
         }
         var convertArgs = [inputPage, output];
-        setConvertArguments(convertArgs);
+        setConvertArguments(convertArgs, options);
         child_process.execFileSync('convert', convertArgs);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
@@ -299,7 +299,7 @@ module.exports = {
         child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
 
         var convertOtherArgs = [tempPDF, output];
-        setConvertArguments(convertOtherArgs);
+        setConvertArguments(convertOtherArgs, options);
         child_process.execFileSync('convert', convertOtherArgs);
         fs.unlinkSync(tempPDF);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
