@@ -142,13 +142,25 @@ module.exports = {
 
           child_process.execFile('unoconv', ['-e', page, '-o', tempPDF, input], function(error) {
             if (error) return callback(error);
-            var convertOtherArgs = [tempPDF + '[0]', output];
+            var convertOtherArgs = [tempPDF, output];
             if (options.width > 0 && options.height > 0) {
               convertOtherArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
             }
             if (options.quality) {
               convertOtherArgs.splice(0, 0, '-quality', options.quality);
             }
+            if (options.density) {
+              convertArgs.splice(0, 0, '-density', options.density);
+            }
+            if (options.flatten) {
+              convertArgs.splice(0, 0, '-flatten');
+            }
+            if (options.sharpen) {
+              convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+            }
+            if (options.adjoin) {
+              convertArgs.splice(0, 0, '-adjoin');
+            }            
             child_process.execFile('convert', convertOtherArgs, function(error) {
               if (error) return callback(error);
               fs.unlink(tempPDF, function(error) {
@@ -297,12 +309,24 @@ module.exports = {
 
         child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
 
-        var convertOtherArgs = [tempPDF + '[0]', output];
+        var convertOtherArgs = [tempPDF, output];
         if (options.width > 0 && options.height > 0) {
           convertOtherArgs.splice(0, 0, '-resize', options.width + 'x' + options.height);
         }
         if (options.quality) {
           convertOtherArgs.splice(0, 0, '-quality', options.quality);
+        }
+        if (options.density) {
+          convertArgs.splice(0, 0, '-density', options.density);
+        }
+        if (options.flatten) {
+          convertArgs.splice(0, 0, '-flatten');
+        }
+        if (options.sharpen) {
+          convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+        }
+        if (options.adjoin) {
+          convertArgs.splice(0, 0, '-adjoin');
         }
         child_process.execFileSync('convert', convertOtherArgs);
         fs.unlinkSync(tempPDF);
