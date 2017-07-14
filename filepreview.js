@@ -17,7 +17,14 @@ module.exports = {
   callbackWithLog: function(message, obj, retVal, callback) {
     if(!retVal)
     {
-      winston.log('error', message, JSON.stringify(obj));
+      if(obj instanceof Error)
+      {
+        winston.log('error', obj);
+      }
+      else
+      {
+        winston.log('error', message, JSON.stringify(obj));
+      }
     }
     else
     {
@@ -163,16 +170,16 @@ module.exports = {
               convertOtherArgs.splice(0, 0, '-quality', options.quality);
             }
             if (options.density) {
-              convertArgs.splice(0, 0, '-density', options.density);
+              convertOtherArgs.splice(0, 0, '-density', options.density);
             }
             if (options.flatten) {
-              convertArgs.splice(0, 0, '-flatten');
+              convertOtherArgs.splice(0, 0, '-flatten');
             }
             if (options.sharpen) {
-              convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+              convertOtherArgs.splice(0, 0, '-sharpen', options.sharpen);
             }
             if (options.adjoin) {
-              convertArgs.splice(0, 0, '-adjoin');
+              convertOtherArgs.splice(0, 0, '-adjoin');
             }            
             child_process.execFile('convert', convertOtherArgs, function(error) {
               if (error) return callbackWithLog('Error', error, error, callback);
@@ -253,7 +260,7 @@ module.exports = {
           return false;
         }
     } catch (e) {
-        winston.log('error', 'Exception', JSON.stringify(e));
+        winston.log('error', e);
         return false;
     }
 
@@ -269,7 +276,7 @@ module.exports = {
         }
         return true;
       } catch (e) {
-        winston.log('error', 'Exception', JSON.stringify(e));
+        winston.log('error', e);
         return false;
       }
     }
@@ -306,7 +313,7 @@ module.exports = {
         }
         return true;
       } catch (e) {
-        winston.log('error', 'Exception', JSON.stringify(e));
+        winston.log('error', e);
         return false;
       }
     }
@@ -334,16 +341,16 @@ module.exports = {
           convertOtherArgs.splice(0, 0, '-quality', options.quality);
         }
         if (options.density) {
-          convertArgs.splice(0, 0, '-density', options.density);
+          convertOtherArgs.splice(0, 0, '-density', options.density);
         }
         if (options.flatten) {
-          convertArgs.splice(0, 0, '-flatten');
+          convertOtherArgs.splice(0, 0, '-flatten');
         }
         if (options.sharpen) {
-          convertArgs.splice(0, 0, '-sharpen', options.sharpen);
+          convertOtherArgs.splice(0, 0, '-sharpen', options.sharpen);
         }
         if (options.adjoin) {
-          convertArgs.splice(0, 0, '-adjoin');
+          convertOtherArgs.splice(0, 0, '-adjoin');
         }
         child_process.execFileSync('convert', convertOtherArgs);
         fs.unlinkSync(tempPDF);
@@ -352,7 +359,7 @@ module.exports = {
         }
         return true;
       } catch (e) {
-        winston.log('error', 'Exception', JSON.stringify(e));
+        winston.log('error', e);
         return false;
       }
     }
