@@ -98,7 +98,7 @@ module.exports = {
           var inputPage = input;
           if (options.page)
           {
-            inputPage += '[' + options.page + ']']
+            inputPage += '[' + options.page + ']';
           }
           var convertArgs = [inputPage, output];
           if (options.width > 0 && options.height > 0) {
@@ -243,7 +243,7 @@ module.exports = {
         var inputPage = input;
         if (options.page)
         {
-          inputPage += '[' + options.page + ']']
+          inputPage += '[' + options.page + ']';
         }
         var convertArgs = [inputPage, output];
         if (options.width > 0 && options.height > 0) {
