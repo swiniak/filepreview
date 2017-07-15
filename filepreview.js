@@ -12,6 +12,7 @@ var fs = require('fs');
 var os = require('os');
 var mimedb = require('./db.json');
 var download = require('download-file')
+var wkhtmltox = require('wkhtmltox');
 const supportedOutputs = ['gif', 'jpg', 'png'];
 
 callbackWithLog = function(message, obj, retVal, callback) {
@@ -199,7 +200,8 @@ module.exports = {
     }
 
     var fileType = 'other';
-
+    var convertToHtml = false;
+    
     root:
     for ( var index in mimedb ) {
       if ( 'extensions' in mimedb[index] ) {
@@ -210,6 +212,10 @@ module.exports = {
             } else if ( index.split('/')[0] == 'video' ) {
               fileType = 'video';
             } else {
+              if(index.indexOf('spreadsheet') !== -1)
+              {
+                convertToHtml = true;
+              }
               fileType = 'other';
             }
 
@@ -295,13 +301,25 @@ module.exports = {
         }
         
         var tempPDF = path.join(os.tmpdir(), hash + '.pdf');
+        var tempHTML = path.join(os.tmpdir(), hash + '.html');
 
-        child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
-
-        var convertOtherArgs = [tempPDF, output];
-        setConvertArguments(convertOtherArgs, options);
-        child_process.execFileSync('convert', convertOtherArgs);
-        fs.unlinkSync(tempPDF);
+        if(!convertToHtml && (extOutput === 'png' || extOutput === 'jpg'))
+        {
+          child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
+          var convertOtherArgs = [tempPDF, output];
+          setConvertArguments(convertOtherArgs, options);
+          child_process.execFileSync('convert', convertOtherArgs);
+          fs.unlinkSync(tempPDF);
+        }
+        else
+        {
+          child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
+          var converter = new wkhtmltox();
+          var wstream = fs.createWriteStream(output);
+          wstream.write(converter.image(fs.createReadStream(tempHTML), { format: extOutput }));
+          wstream.end();
+          fs.unlinkSync(tempHTML);
+        }
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
         }
