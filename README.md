@@ -8,30 +8,9 @@ See filepreview in action, watch this demo using Angular : https://vimeo.com/151
 
 ## Installation
 
-filepreview depends on 'unoconv':
 
 ```
-  $ apt-get install unoconv
-```
-
-filepreview depends on 'ffmpeg':
-
-
-```
-  $ apt-get install ffmpeg
-```
-
-filepreview depends on 'ImageMagick':
-
-```
-  $ apt-get install imagemagick
-```
-
-
-filepreview depends on 'curl':
-
-```
-  $ apt-get install curl
+  $ apt-get install unoconv ffmpeg imagemagick curl wkhtmltopdf
 ```
 
 To install use npm:
