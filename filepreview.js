@@ -12,7 +12,6 @@ var fs = require('fs');
 var os = require('os');
 var mimedb = require('./db.json');
 var download = require('download-file')
-var wkhtmltox = require('wkhtmltox');
 const supportedOutputs = ['gif', 'jpg', 'png'];
 
 callbackWithLog = function(message, obj, retVal, callback) {
@@ -303,8 +302,9 @@ module.exports = {
         var tempPDF = path.join(os.tmpdir(), hash + '.pdf');
         var tempHTML = path.join(os.tmpdir(), hash + '.html');
 
-        if(!convertToHtml && (extOutput === 'png' || extOutput === 'jpg'))
+        if(!convertToHtml || !(extOutput === 'png' || extOutput === 'jpg'))
         {
+          winston.log('debug', 'unoconv -e'+page+' -o '+tempPDF+' '+input);
           child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
           var convertOtherArgs = [tempPDF, output];
           setConvertArguments(convertOtherArgs, options);
@@ -313,12 +313,13 @@ module.exports = {
         }
         else
         {
+          winston.log('debug', 'unoconv -f html -e'+page+' -o '+tempHTML+' '+input);
           child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
-          var converter = new wkhtmltox();
-          converter.image(fs.createReadStream(tempHTML), { format: extOutput })
-            .pipe(fs.createWriteStream(output))
-            .on('finish', function(){ fs.unlinkSync(tempHTML); });
+          winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output);
+          child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output]);
+          fs.unlinkSync(tempHTML);
         }
+        
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
         }
