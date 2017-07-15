@@ -315,7 +315,7 @@ module.exports = {
         {
           child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
           var converter = new wkhtmltox();
-          converter.image(fs.createReadStream(tempHTML), { format: extOutput }))
+          converter.image(fs.createReadStream(tempHTML), { format: extOutput })
             .pipe(fs.createWriteStream(output))
             .on('finish', function(){ fs.unlinkSync(tempHTML); });
         }
