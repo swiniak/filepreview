@@ -315,10 +315,9 @@ module.exports = {
         {
           child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
           var converter = new wkhtmltox();
-          var wstream = fs.createWriteStream(output);
-          wstream.write(converter.image(fs.createReadStream(tempHTML), { format: extOutput }));
-          wstream.end();
-          fs.unlinkSync(tempHTML);
+          converter.image(fs.createReadStream(tempHTML), { format: extOutput }))
+            .pipe(fs.createWriteStream(output))
+            .on('finish', function(){ fs.unlinkSync(tempHTML); });
         }
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
