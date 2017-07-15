@@ -6,8 +6,16 @@ Will generate a file preview (gif, jpg or png) of about 450 different document f
 
 See filepreview in action, watch this demo using Angular : https://vimeo.com/151667833
 
+This fork was extended with the following:
+- winston logging
+- improved quality of output images
+- improved support for spreadsheets
+
+Note that it is used for my own purposes, and due to being lazy some functionality may not work as expected or even at all... but I assure it won't kill you.
+
 ## Installation
 
+Dependencies:
 
 ```
   $ apt-get install unoconv ffmpeg imagemagick curl wkhtmltopdf
