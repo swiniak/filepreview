@@ -29,6 +29,7 @@
   "dependencies": {
     "download-file": "^0.1.5",
     "synchronize": "^2.0.0",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "wkhtmltox": "^1.0.9"
   }
 }
