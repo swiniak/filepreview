@@ -304,7 +304,7 @@ module.exports = {
 
         if(!convertToHtml || !(extOutput === 'png' || extOutput === 'jpg'))
         {
-          winston.log('debug', 'unoconv -e'+page+' -o '+tempPDF+' '+input);
+          winston.log('debug', 'unoconv -e '+page+' -o '+tempPDF+' '+input);
           child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
           var convertOtherArgs = [tempPDF, output];
           setConvertArguments(convertOtherArgs, options);
@@ -313,7 +313,7 @@ module.exports = {
         }
         else
         {
-          winston.log('debug', 'unoconv -f html -e'+page+' -o '+tempHTML+' '+input);
+          winston.log('debug', 'unoconv -f html -e '+page+' -o '+tempHTML+' '+input);
           child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
           winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output);
           child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output]);
