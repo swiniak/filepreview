@@ -4,6 +4,7 @@
 
 */
 const winston = require('winston');
+winston.exitOnError = false
 
 var child_process = require('child_process');
 var crypto = require('crypto');
