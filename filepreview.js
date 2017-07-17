@@ -316,9 +316,6 @@ module.exports = {
             ] 	
           })
           .then(function(thumbnails){
-            // thumbnails is an array (in matching order to your requests) of Canvas objects
-            // you can write them to disk, return them to web users, etc
-            // see node-canvas documentation at https://github.com/Automattic/node-canvas
             thumbnails[0].toBuffer(function(err, buf){      
               fs.writeFileSync(output, buf);
               })
