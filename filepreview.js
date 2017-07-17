@@ -303,22 +303,46 @@ module.exports = {
         var tempPDF = path.join(os.tmpdir(), hash + '.pdf');
         var tempHTML = path.join(os.tmpdir(), hash + '.html');
 
-        if(!convertToHtml || !(extOutput === 'png' || extOutput === 'jpg'))
+        if(options.mimeTypeHint === 'simplify3d_stl')
         {
-          winston.log('debug', 'unoconv -e '+page+' -o '+tempPDF+' '+input);
-          child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
-          var convertOtherArgs = [tempPDF, output];
-          setConvertArguments(convertOtherArgs, options);
-          child_process.execFileSync('convert', convertOtherArgs);
-          fs.unlinkSync(tempPDF);
+          var StlThumbnailer = require('node-stl-thumbnailer');
+          var thumbnailer = new StlThumbnailer({
+            filePath: input,
+            requestThumbnails: [
+              {
+                width: options.width,
+                height: options.height
+              }
+            ] 	
+          })
+          .then(function(thumbnails){
+            // thumbnails is an array (in matching order to your requests) of Canvas objects
+            // you can write them to disk, return them to web users, etc
+            // see node-canvas documentation at https://github.com/Automattic/node-canvas
+            thumbnails[0].toBuffer(function(err, buf){      
+              fs.writeFileSync(output, buf);
+              })
+          })          
         }
         else
         {
-          winston.log('debug', 'unoconv -f html -e '+page+' -o '+tempHTML+' '+input);
-          child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
-          winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output);
-          child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output]);
-          fs.unlinkSync(tempHTML);
+          if(!convertToHtml || !(extOutput === 'png' || extOutput === 'jpg'))
+          {
+            winston.log('debug', 'unoconv -e '+page+' -o '+tempPDF+' '+input);
+            child_process.execFileSync('unoconv', ['-e', page, '-o', tempPDF, input]);
+            var convertOtherArgs = [tempPDF, output];
+            setConvertArguments(convertOtherArgs, options);
+            child_process.execFileSync('convert', convertOtherArgs);
+            fs.unlinkSync(tempPDF);
+          }
+          else
+          {
+            winston.log('debug', 'unoconv -f html -e '+page+' -o '+tempHTML+' '+input);
+            child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
+            winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output);
+            child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output]);
+            fs.unlinkSync(tempHTML);
+          }
         }
         
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
