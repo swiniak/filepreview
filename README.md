@@ -18,7 +18,7 @@ Note that it is used for my own purposes, and due to being lazy some functionali
 Dependencies:
 
 ```
-  $ apt-get install unoconv ffmpeg imagemagick curl wkhtmltopdf
+  $ apt-get install unoconv ffmpeg imagemagick curl wkhtmltopdf libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 ```
 
 To install use npm:
