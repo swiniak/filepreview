@@ -317,7 +317,7 @@ module.exports = {
           })
           .then(function(thumbnails){
             thumbnails[0].toBuffer(function(err, buf){      
-              fs.writeFileSync(output, buf);
+              fs.writeFileSync(output.replace(/%[0-9]+d/g, '00'), buf);
               })
           })          
         }
@@ -336,8 +336,8 @@ module.exports = {
           {
             winston.log('debug', 'unoconv -f html -e '+page+' -o '+tempHTML+' '+input);
             child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
-            winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output);
-            child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output]);
+            winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output.replace(/%[0-9]+d/g, '00'));
+            child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output.replace(/%[0-9]+d/g, '00')]);
             fs.unlinkSync(tempHTML);
           }
         }
