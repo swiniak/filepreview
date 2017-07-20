@@ -354,7 +354,7 @@ module.exports = {
 				child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTMLPage, output.replace(/%[0-9]+d/g, pageNumber)]);
 				fs.unlinkSync(tempHTMLPage);
 				++pageCounter;
-			});
+			}
             fs.unlinkSync(tempHTML);
           }
         }
