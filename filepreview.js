@@ -338,14 +338,14 @@ module.exports = {
           {
             winston.log('debug', 'unoconv -f html -e '+page+' -o '+tempHTML+' '+input);
             child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
-			var $ = cheerio.load(tempHTML);
-			var headHtml = $('head')[0].outerHTML;
+			var $ = cheerio.load(fs.readFileSync(tempHTML));
+			var headHtml = $.html($('head')[0]);
 			var pageCounter = 0;
 			$('a[name^="table"]').next().each(function() {
 				var tempHTMLPage = tempHTML+'_page';
 				fs.writeFileSync(tempHTMLPage, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n');
 				fs.appendFileSync(tempHTMLPage, '<html>\n' + headHtml + '\n<body>');
-				fs.appendFileSync(tempHTMLPage, $(this)[0].outerHTML);
+				fs.appendFileSync(tempHTMLPage, $.html($(this)));
 				fs.appendFileSync(tempHTMLPage, '</body>\n</html>');
 				var pageNumber = ('00'+pageCounter).slice(-2);
 				winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTMLPage+' '+output.replace(/%[0-9]+d/g, pageNumber));
