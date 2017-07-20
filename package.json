@@ -31,6 +31,7 @@
     "synchronize": "^2.0.0",
     "winston": "^2.3.1",
     "node-stl-thumbnailer": "^1.0.1",
-    "wkhtmltox": "^1.0.9"
+    "wkhtmltox": "^1.0.9",
+	"cheerio": "^1.0.0-rc.2"
   }
 }

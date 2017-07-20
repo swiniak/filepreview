@@ -6,6 +6,8 @@
 const winston = require('winston');
 winston.exitOnError = false
 
+const cheerio = require('cheerio');
+
 var child_process = require('child_process');
 var crypto = require('crypto');
 var path = require('path');
@@ -336,8 +338,21 @@ module.exports = {
           {
             winston.log('debug', 'unoconv -f html -e '+page+' -o '+tempHTML+' '+input);
             child_process.execFileSync('unoconv', ['-f', 'html', '-e', page, '-o', tempHTML, input]);
-            winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTML+' '+output.replace(/%[0-9]+d/g, '00'));
-            child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTML, output.replace(/%[0-9]+d/g, '00')]);
+			var $ = cheerio.load(tempHTML);
+			var headHtml = $('head')[0].outerHTML;
+			var pageCounter = 0;
+			$('a[name^="table"]').next().each(function() {
+				var tempHTMLPage = tempHTML+'_page';
+				fs.writeFileSync(tempHTMLPage, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n');
+				fs.appendFileSync(tempHTMLPage, '<html>\n' + headHtml + '\n<body>');
+				fs.appendFileSync(tempHTMLPage, $(this)[0].outerHTML);
+				fs.appendFileSync(tempHTMLPage, '</body>\n</html>');
+				var pageNumber = ('00'+pageCounter).slice(-2);
+				winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTMLPage+' '+output.replace(/%[0-9]+d/g, pageNumber));
+				child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTMLPage, output.replace(/%[0-9]+d/g, pageNumber)]);
+				fs.unlinkSync(tempHTMLPage);
+				++pageCounter;
+			});
             fs.unlinkSync(tempHTML);
           }
         }
