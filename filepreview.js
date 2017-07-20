@@ -341,11 +341,13 @@ module.exports = {
 			var $ = cheerio.load(fs.readFileSync(tempHTML));
 			var headHtml = $.html($('head')[0]);
 			var pageCounter = 0;
-			$('a[name^="table"]').next().each(function() {
+			var tables = $('a[name^="table"]').next();
+			for(var i = 0; i < tables.length; i++)
+			{
 				var tempHTMLPage = tempHTML+'_page';
 				fs.writeFileSync(tempHTMLPage, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n');
 				fs.appendFileSync(tempHTMLPage, '<html>\n' + headHtml + '\n<body>');
-				fs.appendFileSync(tempHTMLPage, $.html($(this)));
+				fs.appendFileSync(tempHTMLPage, $.html($(tables[i])));
 				fs.appendFileSync(tempHTMLPage, '</body>\n</html>');
 				var pageNumber = ('00'+pageCounter).slice(-2);
 				winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTMLPage+' '+output.replace(/%[0-9]+d/g, pageNumber));
