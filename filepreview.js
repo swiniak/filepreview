@@ -344,12 +344,12 @@ module.exports = {
 			var tables = $('a[name^="table"]').next();
 			for(var i = 0; i < tables.length; i++)
 			{
-				var tempHTMLPage = tempHTML+'_page';
+				var pageNumber = ('00'+pageCounter).slice(-2);
+				var tempHTMLPage = tempHTML+'_'+pageNumber+'.html';
 				fs.writeFileSync(tempHTMLPage, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n');
 				fs.appendFileSync(tempHTMLPage, '<html>\n' + headHtml + '\n<body>');
 				fs.appendFileSync(tempHTMLPage, $.html($(tables[i])));
 				fs.appendFileSync(tempHTMLPage, '</body>\n</html>');
-				var pageNumber = ('00'+pageCounter).slice(-2);
 				winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTMLPage+' '+output.replace(/%[0-9]+d/g, pageNumber));
 				child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTMLPage, output.replace(/%[0-9]+d/g, pageNumber)]);
 				fs.unlinkSync(tempHTMLPage);
