@@ -279,8 +279,13 @@ module.exports = {
           inputPage += '[' + options.page + ']';
         }
         var convertArgs = [inputPage, output];
+		if(output.toLowerCase().endsWith('.psd'))
+		{
+			options.flatten = true;
+		}
         setConvertArguments(convertArgs, options);
         child_process.execFileSync('convert', convertArgs);
+		winston.log('debug', 'convert' + convertArgs.join(' '));
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
         }
@@ -350,8 +355,8 @@ module.exports = {
 				fs.appendFileSync(tempHTMLPage, '<html>\n' + headHtml + '\n<body>');
 				fs.appendFileSync(tempHTMLPage, $.html($(tables[i])));
 				fs.appendFileSync(tempHTMLPage, '</body>\n</html>');
-				winston.log('debug', 'xvfb-run wkhtmltoimage -f '+extOutput+' '+tempHTMLPage+' '+output.replace(/%[0-9]+d/g, pageNumber));
-				child_process.execFileSync('xvfb-run', ['wkhtmltoimage', '-f', extOutput, tempHTMLPage, output.replace(/%[0-9]+d/g, pageNumber)]);
+				winston.log('debug', 'xvfb-run -a wkhtmltoimage -f '+extOutput+' '+tempHTMLPage+' '+output.replace(/%[0-9]+d/g, pageNumber));
+				child_process.execFileSync('xvfb-run', ['-a', 'wkhtmltoimage', '-f', extOutput, tempHTMLPage, output.replace(/%[0-9]+d/g, pageNumber)]);
 				fs.unlinkSync(tempHTMLPage);
 				++pageCounter;
 			}
