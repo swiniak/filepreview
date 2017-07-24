@@ -139,10 +139,10 @@ module.exports = {
                     if (options.page) {
                         inputPage += '[' + options.page + ']';
                     }
-                    var convertArgs = [inputPage, output];
-                    if (input.toLowerCase().endsWith('.psd')) {
-                        options.flatten = true;
+                    else if (input.toLowerCase().endsWith('.psd')) {
+                        inputPage += '[0]';
                     }
+                    var convertArgs = [inputPage, output];
                     setConvertArguments(convertArgs, options);
                     winston.log('debug', 'convert' + convertArgs.join(' '));
                     child_process.execFile('convert', convertArgs, function(error) {
@@ -313,10 +313,10 @@ module.exports = {
                 if (options.page) {
                     inputPage += '[' + options.page + ']';
                 }
-                var convertArgs = [inputPage, output];
-                if (input.toLowerCase().endsWith('.psd')) {
-                    options.flatten = true;
+                else if (input.toLowerCase().endsWith('.psd')) {
+                    inputPage += '[0]';
                 }
+                var convertArgs = [inputPage, output];
                 setConvertArguments(convertArgs, options);
                 winston.log('debug', 'convert' + convertArgs.join(' '));
                 child_process.execFileSync('convert', convertArgs);
