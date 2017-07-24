@@ -279,13 +279,13 @@ module.exports = {
           inputPage += '[' + options.page + ']';
         }
         var convertArgs = [inputPage, output];
-		if(output.toLowerCase().endsWith('.psd'))
+		if(input.toLowerCase().endsWith('.psd'))
 		{
-			options.flatten = true;
+			input.flatten = true;
 		}
         setConvertArguments(convertArgs, options);
-        child_process.execFileSync('convert', convertArgs);
 		winston.log('debug', 'convert' + convertArgs.join(' '));
+        child_process.execFileSync('convert', convertArgs);
         if (input_original.indexOf("http://") == 0 || input_original.indexOf("https://") == 0) {
           fs.unlinkSync(input);
         }
